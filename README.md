@@ -57,6 +57,7 @@
   ```shell
   pyinstaller --onefile --icon=name.ico --noconsole crypter.py
   ```
+  #### исполняемый файл будет создан в папке `dist`
   
 ## Разработчик
 
