@@ -55,7 +55,7 @@
 
 - ### Создание исполняемого файла: (в виртуальном окружении)
   ```shell
-  pyinstaller --onefile --icon=name.ico --noconsole crypter.py
+  pyinstaller --onefile --icon=icon.ico --noconsole crypter.py
   ```
   #### исполняемый файл будет создан в папке `dist`
   
