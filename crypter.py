@@ -6,6 +6,8 @@ import rsa
 
 from design import make_design
 
+KEY_LENGTH = 2048
+
 
 class Cryptor:
     def __init__(self):
@@ -45,7 +47,7 @@ class Cryptor:
             self.set_message(message_path)
 
     def keygen(self):
-        public_key, private_key = rsa.newkeys(1024)
+        public_key, private_key = rsa.newkeys(KEY_LENGTH)
         public_key_path = join(getcwd(), 'public.key')
         private_key_path = join(getcwd(), 'private.key')
 
@@ -56,20 +58,25 @@ class Cryptor:
 
         self.set_public_key(public_key_path)
         self.set_private_key(private_key_path)
+        self.ui.user_message.setText('key generated')
 
     def write(self):
         if not self.public_key:
+            self.ui.user_message.setText('public key not found')
             return
         text: str = self.ui.text.toPlainText()
         crypto = rsa.encrypt(
             text.encode(encoding='utf8'),
             self.public_key
         )
-        with open(join(getcwd(), 'message.msg'), 'wb') as file:
+        path = join(getcwd(), 'message.msg')
+        with open(path, 'wb') as file:
             file.write(crypto)
+        self.ui.user_message.setText(f'written at {path}')
 
     def read(self):
         if not self.private_key or not self.message:
+            self.ui.user_message.setText('private key or message not found')
             return
         text = rsa.decrypt(self.message, self.private_key)
         self.ui.text.setPlainText(text.decode('utf8'))
