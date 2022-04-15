@@ -16,6 +16,10 @@
   git clone https://github.com/Raidzin/rsa_crypter.git
   ```
   
+- ### Перейти в директорию rsa_crypter
+  ```shell
+  cd rsa_crypter
+  ```
 - ### Создать виртуальное окружение
   ```shell
   python -m venv venv
