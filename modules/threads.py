@@ -17,14 +17,15 @@ class KeygenThread(QThread):
 class CryptThread(QThread):
     job_done = pyqtSignal(object)
 
-    def __init__(self, name, function, file_path, cryptographer, progressbar):
+    def __init__(self, name, function, file_path, cryptographer, progressbar, label):
         super(CryptThread, self).__init__()
         self.name = name
         self.function = function
         self.file_path = file_path
         self.cryptographer = cryptographer
         self.progressbar = progressbar
+        self.label = label
 
     def run(self):
-        self.function(self.file_path, self.cryptographer, self.progressbar)
+        self.function(self.file_path, self.cryptographer, self.progressbar, self.label)
         self.job_done.emit(self.name)

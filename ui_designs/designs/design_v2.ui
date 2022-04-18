@@ -220,7 +220,7 @@
          <item>
           <widget class="QProgressBar" name="progressBar">
            <property name="maximum">
-            <number>2000</number>
+            <number>100</number>
            </property>
            <property name="value">
             <number>0</number>

@@ -90,6 +90,7 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
             file_path=self.file_path,
             cryptographer=self.cryptographer,
             progressbar=self.progressBar,
+            label=self.errors_lbl,
         )
         self.encrypt_thread.job_done.connect(self.set_message)
         self.encrypt_thread.finished.connect(self.encrypt_thread.deleteLater)
@@ -110,6 +111,7 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
             file_path=self.file_path,
             cryptographer=self.cryptographer,
             progressbar=self.progressBar,
+            label=self.errors_lbl,
         )
         self.decrypt_thread.job_done.connect(self.set_message)
         self.decrypt_thread.finished.connect(self.decrypt_thread.deleteLater)
