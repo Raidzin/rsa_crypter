@@ -1,6 +1,6 @@
 from os import path
 
-from cryptography.cryptographer import RSACryptographer
+from modules.cryptography.cryptographer import RSACryptographer
 
 
 def get_hex_file_name(file_path, cryptographer: RSACryptographer):

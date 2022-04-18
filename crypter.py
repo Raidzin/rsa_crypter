@@ -3,8 +3,8 @@ from os.path import join
 
 from PyQt5 import QtWidgets
 
-from cryptography.cryptographer import RSACryptographer
-from cryptography.reader import encode_file, decode_file
+from modules.cryptography.cryptographer import RSACryptographer
+from modules.cryptography.reader import encode_file, decode_file
 from modules.threads import KeygenThread, CryptThread
 from ui_designs.py_designs.design_v2 import Ui_MainWindow
 
