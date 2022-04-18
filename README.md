@@ -45,7 +45,7 @@
   python crypter.py
   ```
   
-## Установка
+## ~~Установка~~
 
 если есть желание/необходимость создать исполняемый файл в проекте есть pyinstaller
 
@@ -59,7 +59,7 @@
 
 - ### Создание исполняемого файла: (в виртуальном окружении)
   ```shell
-  pyinstaller --onefile --icon=icon.ico --noconsole crypter.py
+  pyinstaller --onefile --icon=icon.ico --noconsole crypter_old.py
   ```
   #### исполняемый файл будет создан в папке `dist`
   

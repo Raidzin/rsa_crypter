@@ -1,53 +1,62 @@
 from os import getcwd
 from os.path import join
 
-from PyQt5 import QtWidgets, uic
-import rsa
+from PyQt5 import QtWidgets
 
-from design import make_design
+from cryptography.cryptographer import RSACryptographer
+from cryptography.reader import encode_file, decode_file
+from modules.threads import KeygenThread, CryptThread
+from ui_designs.py_designs.design_v2 import Ui_MainWindow
 
-KEY_LENGTH = 2048
 
-
-class Cryptor:
+class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
-        self.private_key = None
-        self.public_key = None
-        self.message = None
-        self.private_key_path = None
-        self.public_key_path = None
-        self.message_path = None
-        self.prefix = None
+        super().__init__()
+        self.setupUi(self)
+        self.cryptographer = RSACryptographer()
 
-        make_design()
+        self.file_path = None
 
-        self.app = QtWidgets.QApplication([])
-        self.ui = uic.loadUi('design_v2.ui')
+        self.open_file_btn.clicked.connect(self.open_file)
+        self.open_public_key_btn.clicked.connect(self.open_public_key)
+        self.open_private_key_btn.clicked.connect(self.open_private_key)
 
-        self.ui.choose_public.clicked.connect(self.get_public_key)
-        self.ui.choose_private.clicked.connect(self.get_private_key)
-        self.ui.message.clicked.connect(self.get_message)
-        self.ui.keygen.clicked.connect(self.keygen)
-        self.ui.write.clicked.connect(self.write)
-        self.ui.read.clicked.connect(self.read)
+        self.keygen_btn.clicked.connect(self.keygen)
+        self.encrypt_btn.clicked.connect(self.encrypt)
+        self.decrypt_btn.clicked.connect(self.decrypt)
 
-    def get_public_key(self):
-        public_key_path, ok = QtWidgets.QFileDialog.getOpenFileName()
+        self.key_length_dial.valueChanged.connect(self.update_lcd)
+
+    def open_public_key(self):
+        public_key_path, ok = QtWidgets.QFileDialog.getOpenFileName(
+            filter="*.key")
         if ok:
             self.set_public_key(public_key_path)
 
-    def get_private_key(self):
-        private_key_path, ok = QtWidgets.QFileDialog.getOpenFileName()
+    def open_private_key(self):
+        private_key_path, ok = QtWidgets.QFileDialog.getOpenFileName(
+            filter="*.key")
         if ok:
             self.set_private_key(private_key_path)
 
-    def get_message(self):
+    def open_file(self):
         message_path, ok = QtWidgets.QFileDialog.getOpenFileName()
         if ok:
-            self.set_message(message_path)
+            self.set_file(message_path)
 
     def keygen(self):
-        public_key, private_key = rsa.newkeys(KEY_LENGTH)
+        self.switch_buttons()
+        self.progressBar.setRange(0, 0)
+        self.keygen_thread = KeygenThread(
+            self.cryptographer,
+            2 ** self.key_length_dial.value()
+        )
+        self.keygen_thread.finished.connect(self.keygen_thread.deleteLater)
+        self.keygen_thread.write_keys.connect(self.write_keys)
+        self.keygen_thread.start()
+
+    def write_keys(self, keys):
+        public_key, private_key = keys
         public_key_path = join(getcwd(), 'public.key')
         private_key_path = join(getcwd(), 'private.key')
 
@@ -56,56 +65,81 @@ class Cryptor:
         with open(private_key_path, 'wb') as file:
             file.write(private_key.save_pkcs1())
 
-        self.set_public_key(public_key_path)
-        self.set_private_key(private_key_path)
-        self.ui.user_message.setText('key generated')
+        self.public_key_browse.setText(public_key_path)
+        self.private_key_browse.setText(private_key_path)
 
-    def write(self):
-        if not self.public_key:
-            self.ui.user_message.setText('public key not found')
+        self.progressBar.setRange(0, 100)
+        self.switch_buttons()
+        self.errors_lbl.setText('Ключи сгенерированы')
+
+    def update_lcd(self):
+        self.key_length_lcd.display(2 ** self.key_length_dial.value())
+
+    def encrypt(self):
+        if not self.file_path:
+            self.errors_lbl.setText('Не выбран файл')
             return
-        text: str = self.ui.text.toPlainText()
-        crypto = rsa.encrypt(
-            text.encode(encoding='utf8'),
-            self.public_key
+        if not self.cryptographer.public_key:
+            self.errors_lbl.setText('Не выбран файл публичного ключа')
+            return
+
+        self.switch_buttons()
+        self.encrypt_thread = CryptThread(
+            name='Шифрование завершено',
+            function=encode_file,
+            file_path=self.file_path,
+            cryptographer=self.cryptographer,
+            progressbar=self.progressBar,
         )
-        path = join(getcwd(), 'message.msg')
-        with open(path, 'wb') as file:
-            file.write(crypto)
-        self.ui.user_message.setText(f'written at {path}')
+        self.encrypt_thread.job_done.connect(self.set_message)
+        self.encrypt_thread.finished.connect(self.encrypt_thread.deleteLater)
+        self.encrypt_thread.start()
 
-    def read(self):
-        if not self.private_key or not self.message:
-            self.ui.user_message.setText('private key or message not found')
+    def decrypt(self):
+        if not self.file_path:
+            self.errors_lbl.setText('Не выбран файл')
             return
-        text = rsa.decrypt(self.message, self.private_key)
-        self.ui.text.setPlainText(text.decode('utf8'))
+        if not self.cryptographer.private_key:
+            self.errors_lbl.setText('Не выбран файл приватного ключа')
+            return
+
+        self.switch_buttons()
+        self.decrypt_thread = CryptThread(
+            name='Расшифрование завершено',
+            function=decode_file,
+            file_path=self.file_path,
+            cryptographer=self.cryptographer,
+            progressbar=self.progressBar,
+        )
+        self.decrypt_thread.job_done.connect(self.set_message)
+        self.decrypt_thread.finished.connect(self.decrypt_thread.deleteLater)
+        self.decrypt_thread.start()
+
+    def set_message(self, text):
+        self.switch_buttons()
+        self.errors_lbl.setText(text)
 
     def set_public_key(self, public_key_path):
-        with open(public_key_path, 'rb') as file:
-            key = file.read()
-            self.public_key = rsa.PublicKey.load_pkcs1(key)
-        self.public_key_path = public_key_path
-        self.ui.pub_path.setText(public_key_path)
+        self.cryptographer.set_public_key(public_key_path)
+        self.public_key_browse.setText(public_key_path)
 
     def set_private_key(self, private_key_path):
-        with open(private_key_path, 'rb') as file:
-            key = file.read()
-            self.private_key = rsa.PrivateKey.load_pkcs1(key)
-        self.private_key_path = private_key_path
-        self.ui.priv_path.setText(private_key_path)
+        self.cryptographer.set_private_key(private_key_path)
+        self.private_key_browse.setText(private_key_path)
 
-    def set_message(self, message_path):
-        with open(message_path, 'rb') as file:
-            self.message = file.read()
-        self.message_path = message_path
-        self.ui.message_label.setText(message_path)
+    def set_file(self, file_path):
+        self.file_path = file_path
+        self.file_browse.setText(file_path)
 
-    def start(self):
-        self.ui.show()
-        self.app.exec()
+    def switch_buttons(self):
+        self.progressBar.setValue(0)
+        self.keygen_btn.setEnabled(not self.keygen_btn.isEnabled())
+        self.encrypt_btn.setEnabled(not self.encrypt_btn.isEnabled())
+        self.decrypt_btn.setEnabled(not self.decrypt_btn.isEnabled())
 
 
 if __name__ == '__main__':
-    program = Cryptor()
-    program.start()
+    app = QtWidgets.QApplication([])
+    window = Crypter()
+    window.show()
+    app.exec()
