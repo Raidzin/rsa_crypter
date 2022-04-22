@@ -67,4 +67,4 @@
   
 ## Разработчик
 
-- [RAIDZIN](https://github.com/Raidzin, "github.com/Raidzin")
+- [RAIDZIN](https://github.com/Raidzin "github.com/Raidzin")
