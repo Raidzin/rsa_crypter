@@ -1,5 +1,7 @@
 from PyQt5.QtCore import QThread, pyqtSignal
 
+from modules.cryptography.reader import FileCryptographer
+
 
 class KeygenThread(QThread):
     write_keys = pyqtSignal(object)
@@ -16,16 +18,27 @@ class KeygenThread(QThread):
 
 class CryptThread(QThread):
     job_done = pyqtSignal(object)
+    progressbar = pyqtSignal(int)
 
-    def __init__(self, name, function, file_path, cryptographer, progressbar, label):
+    def __init__(self, name, encrypt, file_path, cryptographer):
         super(CryptThread, self).__init__()
         self.name = name
-        self.function = function
-        self.file_path = file_path
-        self.cryptographer = cryptographer
-        self.progressbar = progressbar
-        self.label = label
+        self.encrypt = encrypt
+        self.file_cryptographer = FileCryptographer(file_path, cryptographer)
 
     def run(self):
-        self.function(self.file_path, self.cryptographer, self.progressbar, self.label)
+        if self.encrypt:
+            crypter = self.file_cryptographer.get_file_encrypter()
+            file_len = self.file_cryptographer.get_chunks_count()
+        else:
+            crypter = self.file_cryptographer.get_file_decrypter()
+            file_len = self.file_cryptographer.get_lines_count()
+        percent = 0
+        for part_number in crypter:
+            new_percent = round(part_number / file_len * 100)
+            if new_percent != percent:
+                self.progressbar.emit(new_percent)
+                percent = new_percent
         self.job_done.emit(self.name)
+
+

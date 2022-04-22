@@ -4,7 +4,6 @@ from os.path import join
 from PyQt5 import QtWidgets
 
 from modules.cryptography.cryptographer import RSACryptographer
-from modules.cryptography.reader import encode_file, decode_file
 from modules.threads import KeygenThread, CryptThread
 from ui_designs.py_designs.design_v2 import Ui_MainWindow
 
@@ -86,12 +85,11 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
         self.switch_buttons()
         self.encrypt_thread = CryptThread(
             name='Шифрование завершено',
-            function=encode_file,
+            encrypt=True,
             file_path=self.file_path,
             cryptographer=self.cryptographer,
-            progressbar=self.progressBar,
-            label=self.errors_lbl,
         )
+        self.encrypt_thread.progressbar.connect(self.progressBar.setValue)
         self.encrypt_thread.job_done.connect(self.set_message)
         self.encrypt_thread.finished.connect(self.encrypt_thread.deleteLater)
         self.encrypt_thread.start()
@@ -107,12 +105,11 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
         self.switch_buttons()
         self.decrypt_thread = CryptThread(
             name='Расшифрование завершено',
-            function=decode_file,
+            encrypt=False,
             file_path=self.file_path,
             cryptographer=self.cryptographer,
-            progressbar=self.progressBar,
-            label=self.errors_lbl,
         )
+        self.decrypt_thread.progressbar.connect(self.progressBar.setValue)
         self.decrypt_thread.job_done.connect(self.set_message)
         self.decrypt_thread.finished.connect(self.decrypt_thread.deleteLater)
         self.decrypt_thread.start()
