@@ -72,7 +72,12 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
         self.errors_lbl.setText('Ключи сгенерированы')
 
     def update_lcd(self):
-        self.key_length_lcd.display(2 ** self.key_length_dial.value())
+        value = self.key_length_dial.value()
+        if value == 12:
+            self.errors_lbl.setText('Осторожно возможен перегруз!')
+        else:
+            self.errors_lbl.setText('')
+        self.key_length_lcd.display(2 ** value)
 
     def encrypt(self):
         if not self.file_path:
