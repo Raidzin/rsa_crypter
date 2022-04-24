@@ -20,14 +20,14 @@ class CryptThread(QThread):
     job_done = pyqtSignal(object)
     progressbar = pyqtSignal(int)
 
-    def __init__(self, name, file_path, cryptographer):
+    def __init__(self, final_message, file_path, cryptographer):
         super(CryptThread, self).__init__()
-        self.name = name
+        self.name = final_message
         self.file_cryptographer = FileCryptographer(file_path, cryptographer)
         self._percent_of_completion = 0
 
-        self.file_len = 0
         self.crypter = None
+        self.file_len = 0
 
     def run(self):
         for part_number in self.crypter:
@@ -42,18 +42,18 @@ class CryptThread(QThread):
 
 
 class EncryptThread(CryptThread):
-    def __init__(self, name, file_path, cryptographer):
+    def __init__(self, final_message, file_path, cryptographer):
         super(EncryptThread, self).__init__(
-            name, file_path, cryptographer
+            final_message, file_path, cryptographer
         )
         self.crypter = self.file_cryptographer.get_file_encrypter()
         self.file_len = self.file_cryptographer.get_chunks_count()
 
 
 class DecryptThread(CryptThread):
-    def __init__(self, name, file_path, cryptographer):
+    def __init__(self, final_message, file_path, cryptographer):
         super(DecryptThread, self).__init__(
-            name, file_path, cryptographer
+            final_message, file_path, cryptographer
         )
         self.crypter = self.file_cryptographer.get_file_decrypter()
         self.file_len = self.file_cryptographer.get_lines_count()

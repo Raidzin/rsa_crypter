@@ -89,7 +89,7 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.switch_buttons()
         self.encrypt_thread = EncryptThread(
-            name='Шифрование завершено',
+            final_message='Шифрование завершено',
             file_path=self.file_path,
             cryptographer=self.cryptographer,
         )
@@ -108,7 +108,7 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.switch_buttons()
         self.decrypt_thread = DecryptThread(
-            name='Расшифрование завершено',
+            final_message='Расшифрование завершено',
             file_path=self.file_path,
             cryptographer=self.cryptographer,
         )
@@ -121,6 +121,12 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
         self.switch_buttons()
         self.errors_lbl.setText(text)
 
+    def switch_buttons(self):
+        self.progressBar.setValue(0)
+        self.keygen_btn.setEnabled(not self.keygen_btn.isEnabled())
+        self.encrypt_btn.setEnabled(not self.encrypt_btn.isEnabled())
+        self.decrypt_btn.setEnabled(not self.decrypt_btn.isEnabled())
+
     def set_public_key(self, public_key_path):
         self.cryptographer.set_public_key(public_key_path)
         self.public_key_browse.setText(public_key_path)
@@ -132,12 +138,6 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
     def set_file(self, file_path):
         self.file_path = file_path
         self.file_browse.setText(file_path)
-
-    def switch_buttons(self):
-        self.progressBar.setValue(0)
-        self.keygen_btn.setEnabled(not self.keygen_btn.isEnabled())
-        self.encrypt_btn.setEnabled(not self.encrypt_btn.isEnabled())
-        self.decrypt_btn.setEnabled(not self.decrypt_btn.isEnabled())
 
 
 if __name__ == '__main__':

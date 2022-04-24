@@ -19,10 +19,8 @@ class RSACryptographer:
 
     def set_public_key(self, public_key_path):
         with open(public_key_path, 'rb') as file:
-            key = file.read()
-            self.public_key = rsa.PublicKey.load_pkcs1(key)
+            self.public_key = rsa.PublicKey.load_pkcs1(file.read())
 
     def set_private_key(self, private_key_path):
         with open(private_key_path, 'rb') as file:
-            key = file.read()
-            self.private_key = rsa.PrivateKey.load_pkcs1(key)
+            self.private_key = rsa.PrivateKey.load_pkcs1(file.read())
