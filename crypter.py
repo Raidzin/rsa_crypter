@@ -4,7 +4,7 @@ from os.path import join
 from PyQt5 import QtWidgets
 
 from modules.cryptography.cryptographer import RSACryptographer
-from modules.threads import KeygenThread, CryptThread
+from modules.threads import KeygenThread, EncryptThread, DecryptThread
 from ui_designs.py_designs.design_v2 import Ui_MainWindow
 
 
@@ -88,9 +88,8 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
             return
 
         self.switch_buttons()
-        self.encrypt_thread = CryptThread(
+        self.encrypt_thread = EncryptThread(
             name='Шифрование завершено',
-            encrypt=True,
             file_path=self.file_path,
             cryptographer=self.cryptographer,
         )
@@ -108,9 +107,8 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
             return
 
         self.switch_buttons()
-        self.decrypt_thread = CryptThread(
+        self.decrypt_thread = DecryptThread(
             name='Расшифрование завершено',
-            encrypt=False,
             file_path=self.file_path,
             cryptographer=self.cryptographer,
         )

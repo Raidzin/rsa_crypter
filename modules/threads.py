@@ -20,25 +20,40 @@ class CryptThread(QThread):
     job_done = pyqtSignal(object)
     progressbar = pyqtSignal(int)
 
-    def __init__(self, name, encrypt, file_path, cryptographer):
+    def __init__(self, name, file_path, cryptographer):
         super(CryptThread, self).__init__()
         self.name = name
-        self.encrypt = encrypt
         self.file_cryptographer = FileCryptographer(file_path, cryptographer)
+        self._percent_of_completion = 0
+
+        self.file_len = 0
+        self.crypter = None
 
     def run(self):
-        if self.encrypt:
-            crypter = self.file_cryptographer.get_file_encrypter()
-            file_len = self.file_cryptographer.get_chunks_count()
-        else:
-            crypter = self.file_cryptographer.get_file_decrypter()
-            file_len = self.file_cryptographer.get_lines_count()
-        percent = 0
-        for part_number in crypter:
-            new_percent = round(part_number / file_len * 100)
-            if new_percent != percent:
-                self.progressbar.emit(new_percent)
-                percent = new_percent
+        for part_number in self.crypter:
+            self._update_progressbar(part_number)
         self.job_done.emit(self.name)
 
+    def _update_progressbar(self, part_number):
+        new_percent_of_completion = round(part_number / self.file_len * 100)
+        if new_percent_of_completion != self._percent_of_completion:
+            self.progressbar.emit(new_percent_of_completion)
+            self._percent_of_completion = new_percent_of_completion
 
+
+class EncryptThread(CryptThread):
+    def __init__(self, name, file_path, cryptographer):
+        super(EncryptThread, self).__init__(
+            name, file_path, cryptographer
+        )
+        self.crypter = self.file_cryptographer.get_file_encrypter()
+        self.file_len = self.file_cryptographer.get_chunks_count()
+
+
+class DecryptThread(CryptThread):
+    def __init__(self, name, file_path, cryptographer):
+        super(DecryptThread, self).__init__(
+            name, file_path, cryptographer
+        )
+        self.crypter = self.file_cryptographer.get_file_decrypter()
+        self.file_len = self.file_cryptographer.get_lines_count()
