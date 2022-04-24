@@ -32,7 +32,7 @@
     ```shell
     source venv/bin/activate
     ```
-  - #### Для Windowc
+  - #### Для Windows
     ```commandline
     venv\Scripts\activate.bat
     ```
@@ -49,7 +49,7 @@
   
 ## Установка
 
-если есть желание/необходимость создать исполняемый файл в проекте есть pyinstaller
+Если есть желание/необходимость создать исполняемый файл в проекте есть pyinstaller
 
 - ### Проверка работы pyinstaller (в виртуальном окружении)
   ```shell
