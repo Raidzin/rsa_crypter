@@ -1,0 +1,7 @@
+KEY_GENERATED = 'Ключи сгенерированы'
+OVERLOAD = 'Осторожно возможен перегруз!'
+FILE_NOT_CHOSEN = 'Не выбран файл'
+PUBLIC_KEY_NOT_CHOSEN = 'Не выбран файл публичного ключа'
+PRIVATE_KEY_NOT_CHOSEN = 'Не выбран файл приватного ключа'
+ENCRYPT_FINISHED = 'Шифрование завершено'
+DECRYPT_FINISHED = 'Расшифрование завершено'

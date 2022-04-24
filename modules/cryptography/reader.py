@@ -81,20 +81,21 @@ class FileCryptographer:
         return self.cryptographer.key_length // 10
 
 
-if __name__ == '__main__':
-    crypter = RSACryptographer()
-    crypter.keygen()
-    print('ключи готовы')
-    file_crypter = FileCryptographer(r'D:\Users\Alexey\Pictures\гг.PNG',
-                                     crypter)
-    file_encrypter = file_crypter.get_file_encrypter()
-    file_len = file_crypter.get_chunks_count()
-    for i in file_encrypter:
-        print(i / file_len * 100)
-    file_decrypter = file_crypter.get_file_decrypter()
-    print('зашифровал')
-    file_crypter.file_path = 'crypto_file'
-    file_len = file_crypter.get_lines_count()
-    for i in file_decrypter:
-        print(i / file_len * 100)
-    print('расшифровал')
+# if __name__ == '__main__':
+#     crypter = RSACryptographer()
+#     crypter.keygen()
+#     print('ключи готовы')
+#     file_crypter = FileCryptographer(r'D:\Users\Alexey\Pictures\гг.PNG',
+#                                      crypter)
+#     file_encrypter = file_crypter.get_file_encrypter()
+#     file_len = file_crypter.get_chunks_count()
+#     for i in file_encrypter:
+#         print(i / file_len * 100)
+#     file_decrypter = file_crypter.get_file_decrypter()
+#     print('зашифровал')
+#     file_crypter.file_path = 'crypto_file'
+#     file_len = file_crypter.get_lines_count()
+#     for i in file_decrypter:
+#         print(i / file_len * 100)
+#     print('расшифровал')
+# Переделать это в тесты!

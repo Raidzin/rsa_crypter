@@ -3,6 +3,7 @@ from os.path import join
 
 from PyQt5 import QtWidgets
 
+import modules.messages as messages
 from modules.cryptography.cryptographer import RSACryptographer
 from modules.threads import KeygenThread, EncryptThread, DecryptThread
 from ui_designs.py_designs.design_v2 import Ui_MainWindow
@@ -69,27 +70,27 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.progressBar.setRange(0, 100)
         self.switch_buttons()
-        self.errors_lbl.setText('Ключи сгенерированы')
+        self.errors_lbl.setText(messages.KEY_GENERATED)
 
     def update_lcd(self):
         value = self.key_length_dial.value()
         if value == 12:
-            self.errors_lbl.setText('Осторожно возможен перегруз!')
+            self.errors_lbl.setText(messages.OVERLOAD)
         else:
             self.errors_lbl.setText('')
         self.key_length_lcd.display(2 ** value)
 
     def encrypt(self):
         if not self.file_path:
-            self.errors_lbl.setText('Не выбран файл')
+            self.errors_lbl.setText(messages.FILE_NOT_CHOSEN)
             return
         if not self.cryptographer.public_key:
-            self.errors_lbl.setText('Не выбран файл публичного ключа')
+            self.errors_lbl.setText(messages.PUBLIC_KEY_NOT_CHOSEN)
             return
 
         self.switch_buttons()
         self.encrypt_thread = EncryptThread(
-            final_message='Шифрование завершено',
+            final_message=messages.ENCRYPT_FINISHED,
             file_path=self.file_path,
             cryptographer=self.cryptographer,
         )
@@ -100,15 +101,15 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def decrypt(self):
         if not self.file_path:
-            self.errors_lbl.setText('Не выбран файл')
+            self.errors_lbl.setText(messages.FILE_NOT_CHOSEN)
             return
         if not self.cryptographer.private_key:
-            self.errors_lbl.setText('Не выбран файл приватного ключа')
+            self.errors_lbl.setText(messages.PRIVATE_KEY_NOT_CHOSEN)
             return
 
         self.switch_buttons()
         self.decrypt_thread = DecryptThread(
-            final_message='Расшифрование завершено',
+            final_message=messages.DECRYPT_FINISHED,
             file_path=self.file_path,
             cryptographer=self.cryptographer,
         )
