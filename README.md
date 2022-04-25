@@ -5,6 +5,8 @@
 
 **Версия 1.2**
 
+![](https://github.com/Raidzin/rsa_crypter/blob/main/design_example.png?raw=true)
+
 ## Используется
 
 - python 3.7
