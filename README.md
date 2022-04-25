@@ -9,9 +9,10 @@
 
 ## Используется
 
-- python 3.7
-- PyQt5
-- pyinstaller
+- [python 3.7](https://www.python.org/ "www.python.org")
+- [PyQt5](https://pypi.org/project/PyQt5/ "pypi.org")
+- [rsa](https://pypi.org/project/rsa/ "pypi.org")
+- [pyinstaller](https://pypi.org/project/pyinstaller/ "pypi.org")
 
 ## Запуск
 
