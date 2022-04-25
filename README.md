@@ -3,7 +3,7 @@
 ## Описание
 Программа для шифрования и расшифровывания файлов с визуальным интерфейсом
 
-**Версия 1.2**
+**Версия 1.3**
 
 ![](https://github.com/Raidzin/rsa_crypter/blob/main/design_example.png?raw=true)
 

@@ -90,11 +90,12 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.switch_buttons()
         self.encrypt_thread = EncryptThread(
-            final_message=messages.ENCRYPT_FINISHED,
             file_path=self.file_path,
             cryptographer=self.cryptographer,
+            final_message=messages.ENCRYPT_FINISHED,
         )
         self.encrypt_thread.progressbar.connect(self.progressBar.setValue)
+        self.encrypt_thread.wait_time.connect(self.errors_lbl.setText)
         self.encrypt_thread.job_done.connect(self.set_message)
         self.encrypt_thread.finished.connect(self.encrypt_thread.deleteLater)
         self.encrypt_thread.start()
@@ -109,11 +110,12 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.switch_buttons()
         self.decrypt_thread = DecryptThread(
-            final_message=messages.DECRYPT_FINISHED,
             file_path=self.file_path,
             cryptographer=self.cryptographer,
+            final_message=messages.DECRYPT_FINISHED,
         )
         self.decrypt_thread.progressbar.connect(self.progressBar.setValue)
+        self.decrypt_thread.wait_time.connect(self.errors_lbl.setText)
         self.decrypt_thread.job_done.connect(self.set_message)
         self.decrypt_thread.finished.connect(self.decrypt_thread.deleteLater)
         self.decrypt_thread.start()
@@ -124,6 +126,7 @@ class Crypter(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def switch_buttons(self):
         self.progressBar.setValue(0)
+        self.key_length_dial.setEnabled(not self.key_length_dial.isEnabled())
         self.keygen_btn.setEnabled(not self.keygen_btn.isEnabled())
         self.encrypt_btn.setEnabled(not self.encrypt_btn.isEnabled())
         self.decrypt_btn.setEnabled(not self.decrypt_btn.isEnabled())
